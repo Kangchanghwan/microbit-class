@@ -357,59 +357,6 @@ table.controls td { color: #454b56; }
   margin-right: 6px;
 }
 
-/* --- MakeCode 버튼 --- */
-.makecode {
-  margin-top: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.btn {
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.4;
-  text-decoration: none;
-  color: #333a44;
-  background: #fff;
-  border: 1px solid #d3d8e0;
-  border-radius: 8px;
-  padding: 9px 16px;
-  cursor: pointer;
-}
-
-.btn:hover { background: #f0f2f5; }
-
-.btn--primary {
-  color: #fff;
-  background: #4a6fa5;
-  border-color: #41628f;
-}
-
-.btn--primary:hover { background: #41628f; }
-
-.makecode-msg {
-  width: 100%;
-  font-size: 15px;
-  color: #8a6416;
-  background: #fff8e8;
-  border: 1px solid #f0dca8;
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin: 0;
-}
-
-.makecode-embed { width: 100%; margin-top: 4px; }
-
-.makecode-embed iframe {
-  width: 100%;
-  height: 620px;
-  border: 1px solid #d3d8e0;
-  border-radius: 8px;
-  background: #fff;
-}
-
 /* ============================================================
    라이트박스
    ============================================================ */
@@ -481,8 +428,6 @@ body.lb-open { overflow: hidden; }
   /* 화면 전용 요소 숨김 */
   .site-header,
   .crumb,
-  .makecode,
-  .makecode-embed,
   .zoom-hint,
   .lightbox,
   .lightbox-close,

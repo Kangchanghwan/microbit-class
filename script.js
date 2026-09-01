@@ -1,14 +1,11 @@
-/* micro:bit 수업 자료 — 라이트박스 + MakeCode 지연 로딩
+/* micro:bit 수업 자료 — 이미지 라이트박스
    외부 라이브러리 없이 바닐라 JS만 사용한다. */
 (function () {
   'use strict';
 
-  /* ==========================================================
-     1) 이미지 라이트박스
-     블록 코드 글씨가 작아 확대 없이는 읽기 어렵다.
+  /* 블록 코드 글씨가 작아 확대 없이는 읽기 어렵다.
      클릭 -> 어두운 배경 위에 원본 크기로 표시.
-     다시 클릭하거나 ESC 로 닫는다. 원본이 화면보다 크면 스크롤된다.
-     ========================================================== */
+     다시 클릭하거나 ESC 로 닫는다. 원본이 화면보다 크면 스크롤된다. */
   var box = null;
   var boxImg = null;
   var closeBtn = null;
@@ -91,71 +88,4 @@
     }
   });
 
-  /* ==========================================================
-     2) MakeCode 연동
-     "여기서 바로 해보기" 는 클릭한 순간에만 <iframe> 을 만든다.
-     6개 페이지의 임베드를 미리 불러오면 무겁기 때문이다.
-     ========================================================== */
-
-  /* 아직 공유 링크/hex 파일이 준비되지 않은 버튼에 안내를 띄운다. */
-  function notice(wrap, text) {
-    var msg = wrap.querySelector('.makecode-msg');
-    if (!msg) {
-      msg = document.createElement('p');
-      msg.className = 'makecode-msg';
-      wrap.appendChild(msg);
-    }
-    msg.textContent = text;
-  }
-
-  document.addEventListener('click', function (e) {
-    var el = e.target.closest ? e.target.closest('[data-mc]') : null;
-    if (!el) return;
-
-    var wrap = el.closest('.makecode');
-    var kind = el.getAttribute('data-mc');
-    var share = (el.getAttribute('data-share') || '').trim();
-    var hex = (el.getAttribute('data-hex') || '').trim();
-
-    if (kind === 'open') {
-      e.preventDefault();
-      if (!share) {
-        notice(wrap, 'MakeCode 공유 링크가 아직 등록되지 않았습니다. 선생님께 물어보세요.');
-        return;
-      }
-      window.open('https://makecode.microbit.org/' + share, '_blank', 'noopener');
-      return;
-    }
-
-    if (kind === 'hex') {
-      e.preventDefault();
-      if (!hex) {
-        notice(wrap, 'hex 파일이 아직 올라오지 않았습니다. 선생님께 물어보세요.');
-        return;
-      }
-      window.location.href = hex;
-      return;
-    }
-
-    if (kind === 'embed') {
-      e.preventDefault();
-      if (!share) {
-        notice(wrap, 'MakeCode 공유 링크가 아직 등록되지 않아 바로 해보기를 열 수 없습니다.');
-        return;
-      }
-      var slot = wrap.parentNode.querySelector('.makecode-embed');
-      if (!slot || slot.getAttribute('data-loaded') === 'yes') return;
-
-      var frame = document.createElement('iframe');
-      frame.src = 'https://makecode.microbit.org/---codeembed#pub:' + share;
-      frame.title = 'MakeCode 편집기';
-      frame.setAttribute('allowfullscreen', 'true');
-      frame.setAttribute('sandbox',
-        'allow-popups allow-forms allow-scripts allow-same-origin');
-      slot.appendChild(frame);
-      slot.setAttribute('data-loaded', 'yes');
-      el.textContent = '아래에서 편집할 수 있어요';
-      el.disabled = true;
-    }
-  });
 })();
