@@ -1,0 +1,561 @@
+@charset "utf-8";
+
+/* ============================================================
+   micro:bit 수업 자료 — 공통 스타일
+   PC 브라우저 전용. 외부 폰트/CDN 사용 안 함.
+   ============================================================ */
+
+/* ---------- 기본값 초기화 ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+               "Malgun Gothic", "맑은 고딕", "Noto Sans KR", "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  color: #2b2f36;
+  background: #f7f8fa;
+}
+
+h1, h2, h3 { line-height: 1.35; margin: 0; }
+p { margin: 0 0 0.8em; }
+p:last-child { margin-bottom: 0; }
+ul { margin: 0; padding-left: 1.3em; }
+li { margin-bottom: 0.35em; }
+li:last-child { margin-bottom: 0; }
+img { max-width: 100%; display: block; }
+a { color: #2f6199; }
+
+/* ---------- 공통 레이아웃 ---------- */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #e3e6ec;
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 64px;
+}
+
+.site-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #2b2f36;
+  text-decoration: none;
+}
+
+.site-title .sub {
+  font-weight: 400;
+  font-size: 15px;
+  color: #6b7280;
+  margin-left: 10px;
+}
+
+.header-link {
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #2f6199;
+  background: #eaf1fa;
+  border: 1px solid #cfdff2;
+  border-radius: 8px;
+  padding: 7px 16px;
+  white-space: nowrap;
+}
+
+.header-link:hover { background: #dfeaf7; }
+
+/* ============================================================
+   홈 — 프로젝트 카드 3열 x 2행
+   ============================================================ */
+.home-main { padding: 26px 0 36px; }
+
+.home-lead {
+  margin: 0 0 22px;
+  font-size: 16px;
+  color: #5b6270;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #e3e6ec;
+  border-left: 6px solid var(--accent, #9aa2ad);
+  border-radius: 12px;
+  padding: 18px 20px 20px;
+}
+
+.card:hover {
+  border-color: var(--accent, #9aa2ad);
+  border-left-color: var(--accent, #9aa2ad);
+  background: var(--tint, #fafbfc);
+}
+
+.card-num {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent, #555);
+  background: var(--tint, #f0f2f5);
+  border-radius: 20px;
+  padding: 1px 11px;
+  margin-bottom: 9px;
+}
+
+.card-title {
+  font-size: 21px;
+  font-weight: 700;
+  margin: 0 0 5px;
+  letter-spacing: -0.01em;
+}
+
+.card-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #5b6270;
+  margin: 0 0 12px;
+  min-height: 3em;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.level {
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: var(--accent, #555);
+  margin-right: 3px;
+}
+
+.tag {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4b5563;
+  background: #f0f2f5;
+  border-radius: 5px;
+  padding: 2px 8px;
+}
+
+/* ============================================================
+   상세 페이지
+   ============================================================ */
+.detail-main { padding: 24px 0 60px; }
+
+.crumb { margin-bottom: 14px; }
+
+.crumb a {
+  font-size: 15px;
+  text-decoration: none;
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #dfe3ea;
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: inline-block;
+}
+
+.crumb a:hover { background: #f0f2f5; }
+
+.page-head {
+  border-left: 6px solid var(--accent, #9aa2ad);
+  background: #fff;
+  border-radius: 12px;
+  border-top: 1px solid #e3e6ec;
+  border-right: 1px solid #e3e6ec;
+  border-bottom: 1px solid #e3e6ec;
+  padding: 20px 26px 22px;
+  margin-bottom: 24px;
+}
+
+.page-head h1 {
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.page-head .level { font-size: 17px; }
+
+.page-head .head-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.page-head p { font-size: 17px; color: #3f4652; }
+
+/* --- 2단 레이아웃 --- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* 가로로 넓은 이미지: 2단 무시하고 전체 폭 */
+.layout--wide { grid-template-columns: minmax(0, 1fr); }
+
+.layout--wide .col-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.col-code, .col-info { min-width: 0; }
+
+.col-info > .box + .box { margin-top: 24px; }
+.layout--wide .col-info > .box + .box { margin-top: 0; }
+
+/* 정보 박스가 2개일 때 (전체폭 레이아웃) */
+.layout--wide .col-info--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* --- 박스 --- */
+.box {
+  background: #fff;
+  border: 1px solid #e3e6ec;
+  border-radius: 12px;
+  padding: 18px 22px 20px;
+}
+
+.box > h2 {
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  padding-bottom: 9px;
+  border-bottom: 2px solid var(--tint, #eef0f4);
+}
+
+.box--full { margin-bottom: 24px; }
+
+/* 주의점 강조 박스 */
+.box--note {
+  background: #fff8e8;
+  border-color: #f0dca8;
+}
+
+.box--note > h2 {
+  border-bottom-color: #f0dca8;
+  color: #8a6416;
+}
+
+.box--note > h2::before {
+  content: "⚠";
+  margin-right: 8px;
+}
+
+/* --- 조작표 --- */
+table.controls {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+table.controls th, table.controls td {
+  text-align: left;
+  vertical-align: top;
+  padding: 9px 10px;
+  border-bottom: 1px solid #eceef2;
+}
+
+table.controls tr:last-child th,
+table.controls tr:last-child td { border-bottom: 0; }
+
+table.controls th {
+  width: 38%;
+  font-weight: 700;
+  color: #2b2f36;
+  white-space: nowrap;
+}
+
+table.controls td { color: #454b56; }
+
+/* --- 이미지 / 라이트박스 트리거 --- */
+.shot {
+  margin: 0;
+  border: 1px solid #e6e8ee;
+  border-radius: 10px;
+  background: #fbfcfd;
+  padding: 10px;
+  cursor: zoom-in;
+}
+
+.shot img { margin: 0 auto; border-radius: 4px; }
+
+.shot figcaption {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 9px;
+}
+
+.zoom-hint {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 10px;
+}
+
+.zoom-hint::before { content: "🔍"; margin-right: 6px; }
+
+/* 연결 순서 사진 */
+.photo-steps { display: grid; gap: 20px; }
+
+.photo-steps .shot img { max-height: 520px; width: auto; }
+
+/* 따라하기 단계 (가로 3칸). 사진 크기가 제각각이라 높이를 맞춰 준다. */
+.guide-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.guide-steps .shot { display: flex; flex-direction: column; }
+
+/* 세 장의 크기가 제각각이라 높이를 고정해 캡션 줄을 맞춘다 */
+.guide-steps .shot img {
+  height: 300px;
+  width: 100%;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.step-no {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent, #666);
+  border-radius: 20px;
+  padding: 1px 10px;
+  margin-right: 6px;
+}
+
+/* --- MakeCode 버튼 --- */
+.makecode {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  color: #333a44;
+  background: #fff;
+  border: 1px solid #d3d8e0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+
+.btn:hover { background: #f0f2f5; }
+
+.btn--primary {
+  color: #fff;
+  background: #4a6fa5;
+  border-color: #41628f;
+}
+
+.btn--primary:hover { background: #41628f; }
+
+.makecode-msg {
+  width: 100%;
+  font-size: 15px;
+  color: #8a6416;
+  background: #fff8e8;
+  border: 1px solid #f0dca8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.makecode-embed { width: 100%; margin-top: 4px; }
+
+.makecode-embed iframe {
+  width: 100%;
+  height: 620px;
+  border: 1px solid #d3d8e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* ============================================================
+   라이트박스
+   ============================================================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(17, 20, 26, 0.92);
+  overflow: auto;          /* 배선도처럼 화면보다 큰 이미지도 스크롤 */
+  cursor: zoom-out;
+  padding: 56px 24px 40px;
+}
+
+.lightbox[hidden] { display: none; }
+
+.lightbox img {
+  display: block;
+  margin: 0 auto;
+  max-width: none;          /* 원본 크기 */
+  background: #fff;
+  border-radius: 4px;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 14px;
+  right: 20px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.28); }
+
+body.lb-open { overflow: hidden; }
+
+/* ============================================================
+   프로젝트별 색 (채도 낮게)
+   ============================================================ */
+.c1 { --accent: #4f7d55; --tint: #eaf2eb; }  /* 만보기   */
+.c2 { --accent: #46688f; --tint: #e9eff6; }  /* 시계     */
+.c3 { --accent: #6a5c8c; --tint: #eeeaf5; }  /* 나침반   */
+.c4 { --accent: #a06a3c; --tint: #f6ece1; }  /* 지진알림 */
+.c5 { --accent: #3f7c78; --tint: #e6f1f0; }  /* 라디오   */
+.c6 { --accent: #94566c; --tint: #f6e9ee; }  /* 선풍기   */
+.c0 { --accent: #5b6270; --tint: #eef0f3; }  /* 시작하기 */
+
+/* ============================================================
+   인쇄 — A4 학습지
+   ============================================================ */
+@media print {
+  @page { size: A4 portrait; margin: 14mm 12mm; }
+
+  body {
+    background: #fff;
+    font-size: 11pt;
+    line-height: 1.55;
+    color: #000;
+  }
+
+  .wrap { max-width: none; padding: 0; }
+
+  /* 화면 전용 요소 숨김 */
+  .site-header,
+  .crumb,
+  .makecode,
+  .makecode-embed,
+  .zoom-hint,
+  .lightbox,
+  .lightbox-close,
+  .home-lead { display: none !important; }
+
+  /* 2단 -> 1단 */
+  .layout,
+  .layout--wide .col-info,
+  .layout--wide .col-info--two {
+    display: block;
+  }
+
+  .col-info > .box + .box,
+  .layout--wide .col-info > .box + .box { margin-top: 10pt; }
+
+  .col-code { margin-bottom: 10pt; }
+
+  .page-head,
+  .box,
+  .shot,
+  .photo-steps .shot,
+  table.controls tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .page-head {
+    border: 0;
+    border-left: 3pt solid #666;
+    border-radius: 0;
+    padding: 0 0 8pt 8pt;
+    margin-bottom: 10pt;
+  }
+
+  .page-head h1 { font-size: 19pt; }
+
+  .box {
+    border: 1pt solid #b9bec7;
+    border-radius: 0;
+    padding: 8pt 10pt;
+    margin-bottom: 10pt;
+  }
+
+  .box--note { background: #f4f4f4; }
+
+  .box > h2 { font-size: 12.5pt; border-bottom: 1pt solid #b9bec7; }
+
+  .shot { border: 0; padding: 0; background: none; }
+
+  /* 이미지가 페이지를 넘기지 않도록 높이 제한 */
+  .shot img { max-height: 150mm; width: auto; margin: 0 auto; }
+
+  .photo-steps .shot img { max-height: 95mm; }
+
+  /* 선풍기(6번)는 배선도 + 연결 사진 + 블록 코드가 모두 들어가 분량이 많다.
+     인쇄할 때만 이미지를 조금 줄이고, 연결 사진 3장을 한 줄에 나란히 놓는다. */
+  .c6 .shot img { max-height: 120mm; }
+
+  .c6 .photo-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6pt;
+  }
+
+  .c6 .photo-steps .shot img { max-height: 55mm; }
+
+  .c6 .photo-steps figcaption { font-size: 8.5pt; line-height: 1.4; }
+
+  .guide-steps { gap: 6pt; }
+  .guide-steps .shot img { height: 48mm; width: 100%; object-fit: contain; }
+  .guide-steps figcaption { font-size: 8.5pt; line-height: 1.4; }
+
+  a { color: #000; text-decoration: none; }
+
+  .card-grid { display: block; }
+}
