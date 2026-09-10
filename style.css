@@ -357,6 +357,210 @@ table.controls td { color: #454b56; }
   margin-right: 6px;
 }
 
+
+/* ============================================================
+   MakeCode 임베드 (블록 코드 / 시뮬레이터)
+   공유 링크 하나로 블록 보기, 시뮬레이터 실행, 편집기 열기를 제공한다.
+   ============================================================ */
+.mc {
+  border: 1px solid #e6e8ee;
+  border-radius: 10px;
+  background: #fbfcfd;
+  overflow: hidden;
+}
+
+.mc-tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #f0f2f5;
+  border-bottom: 1px solid #e3e6ec;
+}
+
+.mc-tab,
+.mc-open {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #d9dee6;
+  border-radius: 7px;
+  padding: 6px 13px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mc-tab:hover, .mc-open:hover { border-color: var(--accent, #9aa2ad); }
+
+.mc-tab.is-on {
+  color: #fff;
+  background: var(--accent, #555);
+  border-color: var(--accent, #555);
+}
+
+.mc-spacer { flex: 1; }
+
+.mc-open {
+  color: #fff;
+  background: #2f6199;
+  border-color: #2f6199;
+}
+
+.mc-open:hover { background: #26507f; border-color: #26507f; }
+
+.mc-open::after { content: " ↗"; }
+
+.mc-frame {
+  position: relative;
+  height: 560px;
+  background: #fff;
+}
+
+.mc--tall .mc-frame { height: 86vh; }
+
+.mc-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mc-frame iframe[hidden] { display: none; }
+
+.mc-tip {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  padding: 9px 12px;
+  border-top: 1px solid #eceef2;
+  background: #fff;
+}
+
+.mc-tip::before { content: "💡"; margin-right: 6px; }
+
+/* 인쇄 전용 요소 — 화면에서는 숨긴다 */
+.print-only { display: none; }
+
+/* 프로젝트 동작 영상 */
+.demo {
+  margin: 0;
+  border: 1px solid #e6e8ee;
+  border-radius: 10px;
+  background: #111;
+  overflow: hidden;
+}
+
+.demo video {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  background: #000;
+}
+
+.demo figcaption {
+  font-size: 14px;
+  color: #6b7280;
+  background: #fbfcfd;
+  padding: 8px 12px;
+}
+
+/* 만드는 순서 */
+.steps { margin: 0; padding-left: 0; list-style: none; counter-reset: step; }
+
+.steps > li {
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 12px;
+  counter-increment: step;
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 27px;
+  height: 27px;
+  line-height: 27px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent, #666);
+  border-radius: 50%;
+}
+
+.steps > li > strong:first-child { display: block; }
+
+/* 센서 값 → 동작 표 */
+table.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+table.matrix th, table.matrix td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eceef2;
+  vertical-align: top;
+}
+
+table.matrix thead th {
+  font-size: 14px;
+  color: #6b7280;
+  background: #f7f8fa;
+  border-bottom: 2px solid #e3e6ec;
+}
+
+table.matrix .v0 { color: #2b2f36; font-weight: 700; }
+table.matrix .v1 { color: #a1514d; font-weight: 700; }
+
+/* 도전 과제 카드 */
+.challenges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.challenges > div {
+  background: var(--tint, #f7f8fa);
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 15px;
+}
+
+.challenges > div > strong { display: block; margin-bottom: 3px; }
+
+/* 홈 — 프로젝트 묶음 제목 */
+.group-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2b2f36;
+  margin: 30px 0 12px;
+  padding-left: 12px;
+  border-left: 5px solid #9aa2ad;
+}
+
+.group-title:first-of-type { margin-top: 0; }
+
+.group-title .sub {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 10px;
+}
+
+.card-grid + .group-title { margin-top: 32px; }
+
+.group-title--maqueen { border-left-color: #a1514d; }
+
 /* ============================================================
    라이트박스
    ============================================================ */
@@ -408,6 +612,9 @@ body.lb-open { overflow: hidden; }
 .c4 { --accent: #a06a3c; --tint: #f6ece1; }  /* 지진알림 */
 .c5 { --accent: #3f7c78; --tint: #e6f1f0; }  /* 라디오   */
 .c6 { --accent: #94566c; --tint: #f6e9ee; }  /* 선풍기   */
+.c7 { --accent: #a1514d; --tint: #f6e9e8; }  /* 마퀸 경찰차   */
+.c8 { --accent: #9a7b1f; --tint: #f6f1de; }  /* 마퀸 빛       */
+.c9 { --accent: #5b6f3d; --tint: #eef2e6; }  /* 마퀸 라인트레이서 */
 .c0 { --accent: #5b6270; --tint: #eef0f3; }  /* 시작하기 */
 
 /* ============================================================
@@ -431,7 +638,23 @@ body.lb-open { overflow: hidden; }
   .zoom-hint,
   .lightbox,
   .lightbox-close,
+  .mc-tabs,
+  .mc-frame,
+  .mc-tip,
+  .demo,
+  .box--demo,
   .home-lead { display: none !important; }
+
+  /* MakeCode 임베드는 인쇄되지 않으므로 그림/주소로 대신한다 */
+  .mc { border: 0; background: none; }
+  .print-only { display: block; }
+  .mc-print-url {
+    font-size: 10pt;
+    color: #000;
+    margin: 4pt 0 0;
+  }
+  .challenges { display: block; }
+  .challenges > div { margin-bottom: 6pt; border: 1pt solid #b9bec7; }
 
   /* 2단 -> 1단 */
   .layout,
@@ -504,3 +727,7 @@ body.lb-open { overflow: hidden; }
 
   .card-grid { display: block; }
 }
+
+/* 따라하기 단계가 2칸일 때 (가로로 넓은 스크린샷) */
+.guide-steps--two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.guide-steps--two .shot img { height: auto; }
