@@ -359,8 +359,9 @@ table.controls td { color: #454b56; }
 
 
 /* ============================================================
-   MakeCode 임베드 (블록 코드 / 시뮬레이터)
-   공유 링크 하나로 블록 보기, 시뮬레이터 실행, 편집기 열기를 제공한다.
+   MakeCode 임베드 (블록 코드 보기 전용 / 시뮬레이터)
+   블록 코드 iframe 은 pointer-events 를 막아 안의 어떤 버튼도 눌리지 않는다.
+   학생이 임베드 안의 "편집" 버튼으로 MakeCode 편집기를 여는 것을 막기 위함.
    ============================================================ */
 .mc {
   border: 1px solid #e6e8ee;
@@ -379,8 +380,7 @@ table.controls td { color: #454b56; }
   border-bottom: 1px solid #e3e6ec;
 }
 
-.mc-tab,
-.mc-open {
+.mc-tab {
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -395,7 +395,7 @@ table.controls td { color: #454b56; }
   white-space: nowrap;
 }
 
-.mc-tab:hover, .mc-open:hover { border-color: var(--accent, #9aa2ad); }
+.mc-tab:hover { border-color: var(--accent, #9aa2ad); }
 
 .mc-tab.is-on {
   color: #fff;
@@ -403,17 +403,21 @@ table.controls td { color: #454b56; }
   border-color: var(--accent, #555);
 }
 
-.mc-spacer { flex: 1; }
-
-.mc-open {
-  color: #fff;
-  background: #2f6199;
-  border-color: #2f6199;
+/* 탭이 하나뿐인 페이지(마퀸)에서 쓰는 제목 라벨 */
+.mc-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4b5563;
+  padding: 6px 4px;
 }
 
-.mc-open:hover { background: #26507f; border-color: #26507f; }
+.mc-label .sub {
+  font-weight: 500;
+  color: #6b7280;
+  margin-left: 6px;
+}
 
-.mc-open::after { content: " ↗"; }
+.mc-spacer { flex: 1; }
 
 .mc-frame {
   position: relative;
@@ -430,6 +434,9 @@ table.controls td { color: #454b56; }
   height: 100%;
   border: 0;
 }
+
+/* 보기 전용: 블록 코드 iframe 은 클릭·드래그·휠이 전혀 들어가지 않는다 */
+.mc-frame iframe[data-view="blocks"] { pointer-events: none; }
 
 .mc-frame iframe[hidden] { display: none; }
 
@@ -561,6 +568,157 @@ table.matrix .v1 { color: #a1514d; font-weight: 700; }
 
 .group-title--maqueen { border-left-color: #a1514d; }
 
+/* 마퀸 카드 4장은 한 줄에 */
+.card-grid--four { grid-template-columns: repeat(4, 1fr); }
+.card-grid--four .card-desc { min-height: 4.8em; }
+
+/* ============================================================
+   단계 페이지 (마퀸 프로젝트)
+   <section class="step" id="s1" data-title="소개"> 를 한 번에 하나만 보여 준다.
+   script.js 가 .steps-on 을 붙이고 위 탭(.stepnav)·아래 버튼(.stepfoot)을 만든다.
+   JS 가 없으면 모든 단계가 순서대로 다 보인다.
+   ============================================================ */
+.stepnav { margin: 0 0 22px; }
+
+.stepnav ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stepnav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #dfe3ea;
+  border-radius: 999px;
+  padding: 7px 16px 7px 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.stepnav a:hover { border-color: var(--accent, #9aa2ad); background: var(--tint, #f7f8fa); }
+
+.stepnav a.is-on {
+  color: #fff;
+  background: var(--accent, #555);
+  border-color: var(--accent, #555);
+}
+
+.stepnav-n {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent, #555);
+  background: var(--tint, #f0f2f5);
+  border-radius: 50%;
+}
+
+.stepnav a.is-on .stepnav-n { color: #fff; background: rgba(255, 255, 255, 0.24); }
+
+/* 단계 안 블록들 사이 간격 (인라인 margin-top 대신) */
+.step > * + * { margin-top: 24px; }
+.step > .box--full { margin-bottom: 0; }
+
+/* 브라우저가 #s3 으로 점프할 때 위쪽 단계 탭이 가려지지 않게 (script.js 의 STEP_OFFSET 과 같은 값) */
+.step { scroll-margin-top: 74px; }
+
+.steps-on .step { display: none; }
+.steps-on .step.is-on { display: block; }
+
+.stepfoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid #e3e6ec;
+}
+
+.stepbtn {
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 9px;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+
+.stepbtn--prev {
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #dfe3ea;
+}
+
+.stepbtn--prev:hover { background: #f0f2f5; }
+
+.stepbtn--next {
+  color: #fff;
+  background: var(--accent, #555);
+  border: 1px solid var(--accent, #555);
+}
+
+.stepbtn--next:hover { filter: brightness(0.92); }
+
+.stepcount { font-size: 14px; color: #6b7280; }
+
+/* 단계 안에서 "이 단계에서 할 일" 을 짧게 알려 주는 띠 */
+.step-lead {
+  font-size: 16px;
+  color: #3f4652;
+  background: var(--tint, #f0f2f5);
+  border-left: 5px solid var(--accent, #9aa2ad);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin: 0;
+}
+
+/* 흐름 표시 (거리 재기 → 판단 → 동작) */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow > li {
+  flex: 1 1 0;
+  min-width: 140px;
+  background: var(--tint, #f7f8fa);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  margin: 0;
+  position: relative;
+}
+
+.flow > li > strong { display: block; margin-bottom: 3px; }
+
+.flow > li + li::before {
+  content: "→";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9aa2ad;
+  font-weight: 700;
+}
+
 /* ============================================================
    라이트박스
    ============================================================ */
@@ -615,6 +773,7 @@ body.lb-open { overflow: hidden; }
 .c7 { --accent: #a1514d; --tint: #f6e9e8; }  /* 마퀸 경찰차   */
 .c8 { --accent: #9a7b1f; --tint: #f6f1de; }  /* 마퀸 빛       */
 .c9 { --accent: #5b6f3d; --tint: #eef2e6; }  /* 마퀸 라인트레이서 */
+.c10 { --accent: #3a6e9c; --tint: #e6eef6; } /* 마퀸 장애물 정지 라인트레이서 */
 .c0 { --accent: #5b6270; --tint: #eef0f3; }  /* 시작하기 */
 
 /* ============================================================
@@ -643,16 +802,22 @@ body.lb-open { overflow: hidden; }
   .mc-tip,
   .demo,
   .box--demo,
+  .stepnav,
+  .stepfoot,
   .home-lead { display: none !important; }
+
+  /* 단계 페이지는 인쇄할 때 모든 단계를 순서대로 */
+  .steps-on .step { display: block; }
+  .step + .step { margin-top: 10pt; }
+  .step-lead { border: 0; border-left: 3pt solid #666; border-radius: 0; background: none; padding: 2pt 0 2pt 8pt; }
+  .flow { display: block; }
+  .flow > li { margin-bottom: 4pt; border: 1pt solid #b9bec7; }
+  .flow > li + li::before { display: none; }
 
   /* MakeCode 임베드는 인쇄되지 않으므로 그림/주소로 대신한다 */
   .mc { border: 0; background: none; }
   .print-only { display: block; }
-  .mc-print-url {
-    font-size: 10pt;
-    color: #000;
-    margin: 4pt 0 0;
-  }
+  .mc-label { display: none; }
   .challenges { display: block; }
   .challenges > div { margin-bottom: 6pt; border: 1pt solid #b9bec7; }
 
@@ -725,7 +890,7 @@ body.lb-open { overflow: hidden; }
 
   a { color: #000; text-decoration: none; }
 
-  .card-grid { display: block; }
+  .card-grid, .card-grid--four { display: block; }
 }
 
 /* 따라하기 단계가 2칸일 때 (가로로 넓은 스크린샷) */
