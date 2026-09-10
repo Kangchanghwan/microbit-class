@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200">
+<title>라인트레이서 — micro:bit 수업 자료</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="site-title" href="index.html">micro:bit 수업 자료<span class="sub">진산중학교</span></a>
+    <a class="header-link" href="step.html">처음 시작하기</a>
+  </div>
+</header>
+
+<main class="detail-main c9">
+  <div class="wrap">
+
+    <p class="crumb"><a href="index.html">← 프로젝트 목록으로</a></p>
+
+    <!-- 1. 무엇을 만드나 -->
+    <div class="page-head">
+      <h1>9. 라인트레이서 (마퀸)</h1>
+      <p class="head-meta">
+        <span class="level" aria-label="난이도 3단계 중 3단계">★★★</span>
+        <span class="tag">적외선 센서</span>
+        <span class="tag">그리고(and)</span>
+        <span class="tag">함수</span>
+        <span class="tag">조건 중첩</span>
+      </p>
+      <p>바닥의 <strong>검은 선</strong>을 밑면 적외선 센서 2개로 찾아가며 스스로 달리는 로봇입니다.
+         공장의 운반 로봇, 식당 서빙 로봇의 기본 원리예요.
+         왼쪽·오른쪽 센서 값의 조합으로 <strong>4가지 상황</strong>을 판단하고, 상황별 동작을 <strong>함수</strong>로
+         나누어 두는 것이 핵심입니다. 판단은 무한반복에서, 동작은 함수에서!</p>
+    </div>
+
+    <!-- 영상 + 원리 -->
+    <div class="layout">
+      <div class="col-code">
+        <section class="box box--demo">
+          <h2>먼저 볼까요? 검은 선을 따라 달리는 마퀸</h2>
+          <figure class="demo">
+            <video controls preload="none" poster="videos/maqueen-line.jpg" src="videos/maqueen-line.mp4"></video>
+            <figcaption>동작 영상 (약 14초) · 출처: 아이씨뱅큐(icbanq) 네이버 블로그 "Maqueen 본격적으로 사용하기 4부"</figcaption>
+          </figure>
+        </section>
+      </div>
+      <div class="col-info">
+        <section class="box">
+          <h2>적외선 센서: 흰 바닥은 1, 검은 선은 0</h2>
+          <figure class="shot">
+            <img src="images/maqueen-ir-sensors.jpg" loading="lazy"
+                 alt="마퀸 밑면 앞쪽. Line-R과 Line-L이라고 적힌 검은 적외선 센서 2개가 초록 동그라미로 표시되어 있다.">
+            <figcaption>마퀸 밑면 앞쪽의 적외선(IR) 센서 2개: Line-L(왼쪽), Line-R(오른쪽)</figcaption>
+          </figure>
+          <p style="margin-top:12px">센서 하나에 눈이 두 개입니다. <strong>발광부</strong>가 눈에 안 보이는 적외선을 바닥으로 쏘고,
+             <strong>수광부</strong>가 튕겨 온 빛을 받습니다.</p>
+          <ul>
+            <li><strong>흰 바닥</strong>: 빛이 반사되어 돌아옴 → 값 <strong>1</strong></li>
+            <li><strong>검은 선</strong>: 빛을 흡수해 못 받음 → 값 <strong>0</strong></li>
+            <li>그래서 값이 0이면 "지금 검은 선 위!", 1이면 "흰 바닥 위!"</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <!-- 4가지 상황 + 핀 -->
+    <div class="layout" style="margin-top:24px">
+      <div class="col-code">
+        <section class="box">
+          <h2>센서 값 조합으로 4가지 상황 판단하기</h2>
+          <table class="matrix">
+            <thead>
+              <tr><th>왼쪽 센서 (P13)</th><th>오른쪽 센서 (P14)</th><th>마퀸의 상황</th><th>해야 할 동작</th><th>함수 이름</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="v0">0 (검정)</td><td class="v0">0 (검정)</td><td>선 위에 잘 있음</td><td>직진 + 헤드라이트 둘 다 켜기</td><td><strong>라인위</strong></td></tr>
+              <tr><td class="v1">1 (흰색)</td><td class="v0">0 (검정)</td><td>왼쪽으로 벗어남</td><td>우회전 (왼쪽 바퀴만 돌리기)</td><td><strong>왼쪽이탈</strong></td></tr>
+              <tr><td class="v0">0 (검정)</td><td class="v1">1 (흰색)</td><td>오른쪽으로 벗어남</td><td>좌회전 (오른쪽 바퀴만 돌리기)</td><td><strong>오른쪽이탈</strong></td></tr>
+              <tr><td class="v1">1 (흰색)</td><td class="v1">1 (흰색)</td><td>선을 완전히 놓침</td><td>천천히 돌며 선 찾기 + 라이트 끄기</td><td><strong>경로이탈</strong></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:12px"><strong>"P13의 디지털 입력 값 = 0 그리고 P14의 디지털 입력 값 = 0"</strong>처럼
+             <strong>그리고</strong>로 묶으면 두 조건이 모두 참일 때만 실행됩니다.</p>
+        </section>
+      </div>
+      <div class="col-info">
+        <section class="box">
+          <h2>핀 배치</h2>
+          <table class="controls">
+            <tbody>
+              <tr><th>P13</th><td>왼쪽 적외선 센서 (디지털 입력)</td></tr>
+              <tr><th>P14</th><td>오른쪽 적외선 센서 (디지털 입력)</td></tr>
+              <tr><th>P8 / P12</th><td>앞쪽 헤드라이트 LED 왼쪽 / 오른쪽 (디지털 출력 1 = 켜기)</td></tr>
+              <tr><th>P15</th><td>밑면 RGB LED 4개 (경광등)</td></tr>
+            </tbody>
+          </table>
+        </section>
+        <section class="box">
+          <h2>준비물 (모둠당)</h2>
+          <ul>
+            <li>micro:bit + 마퀸 본체, AA 건전지 3개, USB 케이블</li>
+            <li>검은색 라인 트랙: 흰 전지 + 검정 절연 테이프(폭 약 2cm)</li>
+            <li>확장: <strong>DFRobot_MaqueenPlus_v20</strong> (추가 방법은 <a href="p7-maqueen-police.html">7번 페이지</a> 참고)</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <!-- 블록 코드 -->
+    <div class="layout layout--wide" style="margin-top:24px">
+      <div class="col-code">
+        <section class="box">
+          <h2>블록 코드</h2>
+          <div class="mc" data-share="S90141-07627-52311-47871" data-name="라인트레이서">
+            <div class="mc-tabs" role="tablist">
+            <button class="mc-tab is-on" type="button" role="tab" aria-selected="true" data-mc-view="blocks">블록 코드</button>
+            <span class="mc-spacer"></span>
+            <button class="mc-tab" type="button" data-mc-tall>크게 보기</button>
+            <a class="mc-open" href="https://makecode.microbit.org/#pub:S90141-07627-52311-47871" target="_blank" rel="noopener">MakeCode에서 열기</a>
+            </div>
+            <div class="mc-frame">
+              <iframe data-view="blocks" src="https://makecode.microbit.org/---codeembed#pub:S90141-07627-52311-47871" title="라인트레이서 블록 코드" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            </div>
+            <p class="mc-tip">함수 4개와 무한반복이 나란히 있어 넓습니다. <strong>크게 보기</strong>를 누르거나 블록을 끌어 옮겨 보세요.
+              <strong>MakeCode에서 열기</strong>를 누르면 확장이 추가된 상태로 편집기에 열리니, 그대로 <strong>다운로드</strong>해 마퀸에 넣을 수 있어요.</p>
+            <p class="mc-print-url print-only">코드 주소: https://makecode.microbit.org/S90141-07627-52311-47871</p>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-info col-info--two">
+        <section class="box">
+          <h2>만드는 순서</h2>
+          <ol class="steps">
+            <li><strong>함수 4개 만들기</strong>
+              고급 → 함수 → <strong>함수 만들기</strong>로 <strong>라인위 · 왼쪽이탈 · 오른쪽이탈 · 경로이탈</strong>을 만듭니다.
+              안은 아래 "함수 안에 넣을 것"대로 채워요.</li>
+            <li><strong>무한반복에서 판단하기</strong>
+              <strong>만약 ~ 이면 / 아니면</strong>을 넣고, 아니면 안에 <strong>만약</strong> 3개를 더 넣습니다 ((+) 버튼).
+              조건은 위 표의 순서대로 <strong>P13 = 0 그리고 P14 = 0</strong> → 함수호출 라인위 … 경로이탈까지.</li>
+            <li><strong>경광등 (선택)</strong>
+              무한반복 맨 위의 <strong>RGB LED P15 0~3번</strong> 빨강·파랑 4개는 <a href="p7-maqueen-police.html">7번</a>에서 배운 경광등입니다.
+              없어도 라인트레이서는 똑같이 달립니다.</li>
+            <li><strong>트랙 만들고 달리기</strong>
+              흰 전지에 검정 절연 테이프로 둥근 코스를 붙입니다. 급한 커브는 피하고, 마퀸을 선 위에 올려 출발!</li>
+          </ol>
+          <p style="margin-top:12px"><strong>블록 찾는 곳</strong> — 고급 → 핀 → "P0의 디지털 입력 값"을 P13 / P14로 바꾸기, "디지털 값 출력" |
+             논리 → 그리고, 비교(=) | 고급 → 함수 → 함수 만들기, 함수호출 | MaqueenPlusV2&amp;V3 → 모터 블록</p>
+        </section>
+
+        <div>
+          <section class="box">
+            <h2>함수 안에 넣을 것</h2>
+            <table class="controls">
+              <tbody>
+                <tr><th>라인위</th><td>모든 모터 전진 20 · P8, P12에 1 출력 (라이트 둘 다 켬)</td></tr>
+                <tr><th>왼쪽이탈</th><td>왼쪽 20, 오른쪽 0 (우회전) · P8 0, P12 1</td></tr>
+                <tr><th>오른쪽이탈</th><td>왼쪽 0, 오른쪽 20 (좌회전) · P8 1, P12 0</td></tr>
+                <tr><th>경로이탈</th><td>왼쪽 16, 오른쪽 20 (크게 돌며 선 찾기) · P8 0, P12 0</td></tr>
+              </tbody>
+            </table>
+            <p style="margin-top:12px">헤드라이트는 "지금 어느 함수가 실행 중인지" 보여 주는 표시등입니다. 도는 쪽 라이트가 켜져요.</p>
+          </section>
+
+          <section class="box box--note" style="margin-top:24px">
+            <h2>막힐 때</h2>
+            <p><strong>선을 자꾸 벗어나요.</strong><br>
+               속도 20을 더 낮추거나 커브를 더 완만하게. 경로이탈의 16/20 차이를 키우면 더 작게 돌아요.</p>
+            <p><strong>반대로 돌아요.</strong><br>
+               왼쪽이탈/오른쪽이탈 함수의 바퀴 속도(20/0)가 서로 바뀌지 않았는지 확인하세요.</p>
+            <p><strong>계속 직진만 해요.</strong><br>
+               "숫자 출력 P13의 디지털 입력 값"으로 센서 값이 바뀌는지 확인하세요. 바닥이 너무 반짝이지 않는지도요.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- 도전 과제 -->
+    <section class="box box--full" style="margin-top:24px">
+      <h2>도전 과제</h2>
+      <div class="challenges">
+        <div><strong>빠른 트레이서</strong>속도 20을 올리되 벗어나지 않는 최대 속도 찾기 (모둠 대결!)</div>
+        <div><strong>경찰 순찰차</strong>경광등을 켜고 선을 따라 순찰하기. 위 코드가 바로 이것!</div>
+        <div><strong>장애물 정지</strong><a href="p7-maqueen-police.html">7번</a>의 초음파 코드를 넣어 선 위에 장애물이 있으면 멈추기 → 아래 예시 ①</div>
+        <div><strong>선을 놓치면 자율주행</strong>선을 완전히 놓쳤을 때 경로이탈 대신 7번의 자율주행 함수를 부르기 → 아래 예시 ②</div>
+      </div>
+    </section>
+
+    <div class="layout" style="margin-top:24px">
+      <div class="col-code">
+        <section class="box">
+          <h2>도전 예시 ① 장애물 앞에서 정지</h2>
+          <p>무한반복 맨 위에서 먼저 <strong>거리</strong>를 재고, <strong>거리 &lt; 14</strong>이면 <strong>정지</strong> 함수를,
+             아니면 원래의 라인트레이서 판단을 합니다. 정지 함수는 모든 모터 속도 0 + 라이트 끄기입니다.
+             (sonar 확장이 추가되어 있어야 해요.)</p>
+          <div class="mc" data-share="S73289-18795-64652-21315" data-name="라인트레이서 장애물 정지">
+            <div class="mc-tabs" role="tablist">
+            <button class="mc-tab is-on" type="button" role="tab" aria-selected="true" data-mc-view="blocks">블록 코드</button>
+            <span class="mc-spacer"></span>
+            <button class="mc-tab" type="button" data-mc-tall>크게 보기</button>
+            <a class="mc-open" href="https://makecode.microbit.org/#pub:S73289-18795-64652-21315" target="_blank" rel="noopener">MakeCode에서 열기</a>
+            </div>
+            <div class="mc-frame">
+              <iframe data-view="blocks" src="https://makecode.microbit.org/---codeembed#pub:S73289-18795-64652-21315" title="라인트레이서 장애물 정지 블록 코드" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            </div>
+            <p class="mc-print-url print-only">코드 주소: https://makecode.microbit.org/S73289-18795-64652-21315</p>
+          </div>
+        </section>
+      </div>
+      <div class="col-info">
+        <section class="box">
+          <h2>도전 예시 ② 선을 놓치면 자율주행</h2>
+          <p>두 센서가 모두 1(흰색)일 때 <strong>경로이탈</strong> 대신 <strong>자율주행_경찰차</strong> 함수를 부릅니다.
+             그러면 선을 놓친 마퀸이 7번처럼 벽을 피하며 돌아다녀요. 경로이탈 함수는 남아 있지만 쓰이지 않습니다.</p>
+          <div class="mc" data-share="S75164-37951-78859-74104" data-name="라인트레이서 자율주행 전환">
+            <div class="mc-tabs" role="tablist">
+            <button class="mc-tab is-on" type="button" role="tab" aria-selected="true" data-mc-view="blocks">블록 코드</button>
+            <span class="mc-spacer"></span>
+            <button class="mc-tab" type="button" data-mc-tall>크게 보기</button>
+            <a class="mc-open" href="https://makecode.microbit.org/#pub:S75164-37951-78859-74104" target="_blank" rel="noopener">MakeCode에서 열기</a>
+            </div>
+            <div class="mc-frame">
+              <iframe data-view="blocks" src="https://makecode.microbit.org/---codeembed#pub:S75164-37951-78859-74104" title="라인트레이서 자율주행 전환 블록 코드" loading="lazy" allowfullscreen sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            </div>
+            <p class="mc-print-url print-only">코드 주소: https://makecode.microbit.org/S75164-37951-78859-74104</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
