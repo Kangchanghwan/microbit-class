@@ -99,9 +99,23 @@
      - sandbox 에 allow-popups 를 주지 않아 새 창도 열리지 않는다.
      - [시뮬레이터] 탭(기본 프로젝트만): 처음 눌렀을 때만 iframe 을 만든다(무거워서).
      - [크게 보기]: 높이를 화면의 86% 로 늘였다 줄였다 한다.
+     - [− 41% +]: 블록을 확대한다. 확대하면 틀 안에서 스크롤·드래그로 움직인다.
+       data-size="가로x세로"(블록 전체의 원본 크기)가 있는 임베드에만 붙는다.
      ========================================================== */
   var MC = 'https://makecode.microbit.org/';
   var SANDBOX = 'allow-scripts allow-same-origin';
+
+  /* 임베드 안의 블록 그림(SVG)은 iframe 가로에서 1rem(16px) 을 뺀 폭과 iframe 세로 높이 안에
+     "전체가 들어가도록" 맞춰 그려진다. 그래서 iframe 을 원본 크기 × 배율로 키우면
+     블록이 딱 그 배율로 그려진다. 세로 여유 30px 은 아래쪽 MakeCode 표시줄 몫이다. */
+  var MC_PAD_X = 16;
+  var MC_PAD_Y = 30;
+
+  /* 확대 단계. 100% 가 MakeCode 편집기에서 보는 크기와 같다. */
+  var MC_ZOOMS = [0.6, 0.8, 1, 1.25, 1.5, 2];
+
+  /* 창 크기나 [크게 보기] 가 바뀌면 다시 계산할 함수들 */
+  var mcRelayouts = [];
 
   function mcFrame(wrap, view) {
     var share = wrap.getAttribute('data-share');
@@ -141,6 +155,8 @@
       var frames = wrap.querySelectorAll('.mc-frame iframe');
       for (var j = 0; j < frames.length; j++) frames[j].hidden = true;
       mcFrame(wrap, view).hidden = false;
+      /* 확대는 블록 코드에만 쓰므로 시뮬레이터일 때는 버튼을 숨긴다 */
+      wrap.classList.toggle('mc--sim', view === 'sim');
       return;
     }
 
@@ -149,8 +165,162 @@
       var mc = tall.closest('.mc');
       var on = mc.classList.toggle('mc--tall');
       tall.textContent = on ? '작게 보기' : '크게 보기';
+      mcRelayoutAll();
       if (on && mc.scrollIntoView) mc.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
+  });
+
+  /* ----------------------------------------------------------
+     확대 (− 41% +)
+     iframe 을 "원본 크기 × 배율" 로 키우고, 바깥 틀(.mc-frame)에서 스크롤한다.
+     블록 iframe 은 pointer-events 가 막혀 있어 휠·드래그가 바깥 틀로 전달되므로
+     보기 전용을 유지한 채로 움직여 볼 수 있다.
+     ---------------------------------------------------------- */
+  function mcSize(wrap) {
+    var parts = (wrap.getAttribute('data-size') || '').split('x');
+    var w = parseFloat(parts[0]);
+    var h = parseFloat(parts[1]);
+    return (w > 0 && h > 0) ? { w: w, h: h } : null;
+  }
+
+  function mcZoomBtn(label, name) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mc-tab mc-zbtn';
+    b.textContent = label;
+    b.title = name;
+    b.setAttribute('aria-label', name);
+    return b;
+  }
+
+  function initMcZoom(wrap) {
+    var size = mcSize(wrap);
+    var slot = wrap.querySelector('.mc-frame');
+    var tabs = wrap.querySelector('.mc-tabs');
+    if (!size || !slot || !tabs) return;
+
+    var zoom = 0;  /* 0 = 전체 보기(틀에 맞춤), 그 밖에는 배율 */
+
+    var group = document.createElement('span');
+    group.className = 'mc-zoom';
+    var less = mcZoomBtn('−', '코드 작게 보기');
+    var now = mcZoomBtn('', '전체 보기');
+    var more = mcZoomBtn('+', '코드 크게 보기');
+    now.className = 'mc-tab mc-znow';
+    group.appendChild(less);
+    group.appendChild(now);
+    group.appendChild(more);
+    tabs.insertBefore(group, tabs.querySelector('[data-mc-tall]'));
+
+    /* 전체가 다 보이게 맞췄을 때의 배율 */
+    function fit() {
+      return Math.min((slot.offsetWidth - MC_PAD_X) / size.w, slot.offsetHeight / size.h);
+    }
+
+    /* 전체 보기보다 확실히 큰 단계만 쓴다 */
+    function levels() {
+      var f = fit();
+      var out = [];
+      for (var i = 0; i < MC_ZOOMS.length; i++) {
+        if (MC_ZOOMS[i] > f + 0.05) out.push(MC_ZOOMS[i]);
+      }
+      return out;
+    }
+
+    function render() {
+      /* 숨겨진 단계 안에 있으면 크기를 잴 수 없다. 보일 때 다시 계산한다. */
+      if (!slot.offsetWidth || !slot.offsetHeight) return;
+
+      var list = levels();
+      var f = fit();
+      if (zoom && (list.length === 0 || zoom <= f + 0.05)) zoom = 0;
+
+      var frame = slot.querySelector('iframe[data-view="blocks"]');
+      wrap.classList.toggle('mc--zoom', !!zoom);
+      if (frame) {
+        frame.style.width = zoom ? Math.round(size.w * zoom + MC_PAD_X) + 'px' : '';
+        frame.style.height = zoom ? Math.round(size.h * zoom + MC_PAD_Y) + 'px' : '';
+      }
+      if (zoom) slot.tabIndex = 0;
+      else slot.removeAttribute('tabindex');
+
+      group.hidden = list.length === 0;
+      now.textContent = Math.round((zoom || f) * 100) + '%';
+      less.disabled = !zoom;
+      more.disabled = list.length === 0 || zoom === list[list.length - 1];
+    }
+
+    function setZoom(next) {
+      var cx = 0.5, cy = 0.5;
+      var keep = zoom && next;
+      if (keep) {
+        cx = (slot.scrollLeft + slot.clientWidth / 2) / slot.scrollWidth;
+        cy = (slot.scrollTop + slot.clientHeight / 2) / slot.scrollHeight;
+      }
+      zoom = next;
+      render();
+      if (!zoom) return;
+      /* 전체 보기에서 막 확대했으면 코드의 왼쪽 위부터 보여 준다 */
+      slot.scrollLeft = keep ? cx * slot.scrollWidth - slot.clientWidth / 2 : 0;
+      slot.scrollTop = keep ? cy * slot.scrollHeight - slot.clientHeight / 2 : 0;
+    }
+
+    less.addEventListener('click', function () {
+      var list = levels();
+      var i = list.indexOf(zoom);
+      setZoom(i > 0 ? list[i - 1] : 0);
+    });
+
+    more.addEventListener('click', function () {
+      var list = levels();
+      if (!list.length) return;
+      var i = list.indexOf(zoom);
+      setZoom(i < 0 ? list[0] : list[Math.min(i + 1, list.length - 1)]);
+    });
+
+    now.addEventListener('click', function () { setZoom(0); });
+
+    /* 마우스로 잡아끌어 움직이기 (손가락·휠은 브라우저가 알아서 스크롤한다) */
+    slot.addEventListener('pointerdown', function (e) {
+      if (!zoom || e.pointerType !== 'mouse' || e.button !== 0) return;
+      var x0 = e.clientX, y0 = e.clientY;
+      var left0 = slot.scrollLeft, top0 = slot.scrollTop;
+
+      function move(ev) {
+        slot.scrollLeft = left0 - (ev.clientX - x0);
+        slot.scrollTop = top0 - (ev.clientY - y0);
+      }
+      function up() {
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+        document.removeEventListener('pointercancel', up);
+        slot.classList.remove('is-grabbing');
+      }
+      /* 움직임과 놓는 순간은 document 에서 받고, 포인터를 붙잡아 두어
+         마우스가 틀 밖으로 나가도 끝까지 따라오게 한다. */
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+      document.addEventListener('pointercancel', up);
+      slot.classList.add('is-grabbing');
+      e.preventDefault();
+      if (slot.setPointerCapture) slot.setPointerCapture(e.pointerId);
+    });
+
+    mcRelayouts.push(render);
+    render();
+  }
+
+  function mcRelayoutAll() {
+    for (var i = 0; i < mcRelayouts.length; i++) mcRelayouts[i]();
+  }
+
+  var mcResizeTimer = null;
+  window.addEventListener('resize', function () {
+    if (mcResizeTimer) return;
+    mcResizeTimer = setTimeout(function () {
+      mcResizeTimer = null;
+      mcRelayoutAll();
+    }, 150);
   });
 
   /* 페이지가 열리면 블록 코드 iframe 을 확인한다.
@@ -161,6 +331,7 @@
       var f = mcFrame(wraps[i], 'blocks');
       f.setAttribute('sandbox', SANDBOX);
       f.tabIndex = -1;
+      initMcZoom(wraps[i]);
     }
   });
 
@@ -261,6 +432,8 @@
         if (on) links[i].setAttribute('aria-current', 'step');
         else links[i].removeAttribute('aria-current');
       }
+      /* 숨어 있던 단계의 블록 코드 확대 배율을 지금 크기로 다시 계산한다 */
+      mcRelayoutAll();
       if (scroll) {
         /* 단계 탭이 보이도록 단계 시작 위치에서 탭 높이만큼 위로 (CSS scroll-margin-top 과 같은 값) */
         var top = byId[id].getBoundingClientRect().top + window.pageYOffset - STEP_OFFSET;

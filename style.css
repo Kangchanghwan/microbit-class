@@ -435,6 +435,60 @@ table.controls td { color: #454b56; }
   border: 0;
 }
 
+/* 확대 보기: 블록 iframe 을 원본 크기 × 배율(JS 가 px 로 지정)로 키우고
+   바깥 틀에서 스크롤·드래그로 움직인다. iframe 은 pointer-events 가 막혀 있어
+   휠·드래그가 이 틀로 그대로 전달된다. */
+.mc--zoom .mc-frame {
+  overflow: auto;
+  overscroll-behavior: contain;
+  cursor: grab;
+}
+
+.mc--zoom .mc-frame.is-grabbing { cursor: grabbing; }
+
+.mc--zoom .mc-frame iframe[data-view="blocks"] {
+  position: static;
+  display: block;
+  margin: 0 auto;
+}
+
+/* 확대 버튼 (− 41% +) */
+.mc-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mc-zoom[hidden] { display: none; }
+
+.mc-zbtn {
+  min-width: 32px;
+  padding: 6px 0;
+  font-size: 16px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.mc-znow {
+  min-width: 58px;
+  padding: 6px 4px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-zbtn:disabled,
+.mc-znow:disabled {
+  color: #9aa2ad;
+  border-color: #e3e6ec;
+  cursor: default;
+}
+
+.mc-zbtn:disabled:hover,
+.mc-znow:disabled:hover { border-color: #e3e6ec; }
+
+/* 시뮬레이터를 보는 동안에는 확대가 필요 없다 */
+.mc--sim .mc-zoom { display: none; }
+
 /* 보기 전용: 블록 코드 iframe 은 클릭·드래그·휠이 전혀 들어가지 않는다 */
 .mc-frame iframe[data-view="blocks"] { pointer-events: none; }
 
